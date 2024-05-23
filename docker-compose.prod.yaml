@@ -1,0 +1,30 @@
+version: "3.7"
+services:
+  deloingk-admin-development::
+    container_name: deloingk-admin-production
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - .env.production
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+      args:
+        - .dockerignore=.dockerignore
+        - no-cache=true
+    volumes:
+      - ./:/usr/src/app # bind mount the current directory to the container so that we can see the changes in real time --> make shure to remove this when you are done with development else your ignore files wiil be addd to the container becasue i am bindmounting the current directory to the usr/src/app directory and when i addedor modify a file in the current directory it will be added to the container
+      - nodemodules:/usr/src/app/node_modules # this is volume for node_modules so that it persists even if the container is removed and dont install the node_modules again and again at every build
+    expose:
+      - "7500"
+    ports:
+      - "7500:7500"
+    command: npm run start:production
+    networks:
+      - backend-network
+    restart: on-failure
+
+volumes:
+  nodemodules: # named volume for node_modules so that it persists even if the container is removed
+networks:
+  backend-network:
